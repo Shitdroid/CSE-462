@@ -68,14 +68,27 @@ class Graph {
     vector<pair<int, int>> treeEdges; // vector of tree edges
     vector<pair<int, int>> nonTreeEdges; // vector of non-tree edges
     DisjointSet ds; // disjoint set for tracking trees
+    vector<vector<bool>> edges; // edges of the graph
 
 public:
-    Graph(int n) : nodes(n), ds(n) {}
+    Graph(int n) : nodes(n), ds(n) {
+        for(int i=0;i<n;i++)
+        {
+             vector<bool>adj;
+                for(int j=0;j<n;j++)
+                {
+                    adj.push_back(false);
+                }
+                edges.push_back(adj);
+        }
+    }
 
     void addEdge(int u, int v) {
         nodes[u].addNeighbour(v);
         nodes[v].addNeighbour(u);
-
+         
+         edges[u][v] = true;
+         edges[v][u] = true;
         if (nodes[u].outsideDegree == 3) 
             addToList(u, R4);
 
@@ -178,6 +191,119 @@ public:
         }
     }
 
+    void phase2() {
+      
+        for( int i=0;i<treeEdges.size();i++)
+        {
+            cout<<treeEdges[i].first<<" "<<treeEdges[i].second<<endl;
+        }
+
+            list<int> isinF;
+           for (int v = 0; v < nodes.size(); v++) 
+            {   
+    
+                if (nodes[v].inF) { 
+                    isinF.push_back(v);
+                }
+
+            }
+        while(!isinF.empty())
+        {
+            int v = isinF.front();
+            isinF.pop_front();
+           
+                    for (int neighbor : nodes[v].adjList) {
+                        if (!nodes[neighbor].inF) 
+                        {    
+                            cout<<"not in F: "<<neighbor<<endl;
+                            expandVertex(v); // Expand v
+                            isinF.push_back(neighbor);
+                            break;
+                        }
+                    }    
+        }
+        
+          for( int i=0;i<treeEdges.size();i++)
+        {
+            cout<<treeEdges[i].first<<" "<<treeEdges[i].second<<endl;
+        }
+     
+        unordered_map<int, vector<int>> components;
+        for (int i = 0; i < nodes.size(); ++i) {
+            if (nodes[i].inF) {
+                int root = ds.find(i); // finding the root of the tree(representative node)
+                components[root].push_back(i);
+            }
+        }
+        // cout<<"Components: "<<components.size()<<endl;
+        // cout<<nodes[4].inF<<endl;
+        // for(int i=0;i<components.size();i++)
+        // {
+        //     cout<<"Component "<<i<<": ";
+        //     for(int j=0;j<components[i].size();j++)
+        //     {
+        //         cout<<components[i][j]<<" ";
+        //     }
+        //     cout<<endl;
+        // }
+        
+        // make connected
+        
+       for (auto i = components.begin(); i != components.end(); i++)
+        {   bool added=false;
+            if(components[i->first].size()>=1)
+            {
+               for(auto j = components.begin(); j!= components.end(); j++)
+               {
+                   if(i->first!=j->first)
+                   {
+                         for(auto k =0;k<(j->second).size(); k++)
+                         {
+                            if(edges[i->first][(j->second)[k]]==true)
+                            {
+                                cout<<"Edge added: "<<i->first<<" "<<(j->second)[k]<<endl;
+                                treeEdges.push_back({(j->second)[k],i->first});
+                                ds.unite((j->second)[k],i->first);
+                                added=true;
+                                break;
+                            }
+
+                         }
+                   }
+                   if(added)
+                     {  
+
+                        break;
+                     }
+               }
+            }
+
+            
+
+        }
+          
+    }
+
+
+    int countLeaves() {
+        vector<int>degree(nodes.size(), 0);
+
+        for (int i = 0 ; i < treeEdges.size(); i++) {
+            degree[treeEdges[i].first]++;
+            degree[treeEdges[i].second]++;
+        }
+
+        int leaves = 0;
+
+        for (int i = 0; i < degree.size(); i++) {
+            if (degree[i] == 1) {
+                leaves++;
+            }
+        }
+
+        return leaves;
+    }
+    
     void print() {
         cout << "*********************************" << endl;
 
@@ -235,8 +361,8 @@ public:
 // ...existing code...
 
 int main() {
-    freopen("input.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
+    // freopen("input.txt", "r", stdin);
+    // freopen("output.txt", "w", stdout);
 
     int n, m;
     cin >> n >> m;
@@ -255,5 +381,9 @@ int main() {
 
     graph.print();
 
+    graph.phase2();
+    graph.print();
+    int leaves=graph.countLeaves();
+    cout<<"Leaves: "<<leaves<<endl;
     return 0;
 }
