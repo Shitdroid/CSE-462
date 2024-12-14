@@ -48,4 +48,6 @@ int main(){
         }
     }
     cout<<leafCount<<endl;
+    for(int i=0;i<n;i++)delete nodes[i];
+    
 }

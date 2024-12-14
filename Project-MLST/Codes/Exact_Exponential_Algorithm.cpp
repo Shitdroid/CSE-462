@@ -384,10 +384,10 @@ int M_Algorithm(int root, Graph g){
                 tmpar.push_back(x);
             }
         }
-        if(tmpar.size() != 2){
-            cout << tmpar.size() << endl;
+        // if(tmpar.size() != 2){
+        //     cout << tmpar.size() << endl;
             
-        }
+        // }
         assert(tmpar.size() == 2);
         int x1 = tmpar[0];
         int x2 = tmpar[1];
@@ -420,7 +420,7 @@ int M_Algorithm(int root, Graph g){
                     return 0;
                 }
             }
-            cout << "souldnt be here" << endl;
+            // cout << "souldnt be here" << endl;
             return 0;
         }
         else{

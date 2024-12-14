@@ -34,37 +34,41 @@ int main(){
         nodes[u]->children.push_back(nodes[v]);
         nodes[v]->children.push_back(nodes[u]);
     }
-    int max_priority_index=0;
-    for(int i=0;i<n;i++){
-        nodes[i]->priority=nodes[i]->children.size();
-        if(nodes[i]->priority>nodes[max_priority_index]->priority)max_priority_index=i;
-    }
     auto compare = [](node* a, node* b) {
         return a->priority < b->priority;
     };
+    int max_leaf_count=-1;
+    for(int i=0;i<nodes.size();i++){
+        for(int j=0;j<n;j++){
+            nodes[j]->priority=nodes[j]->children.size();
+            nodes[j]->isVisited=false;
+            nodes[j]->isLeaf=true;
+        }
 
-    priority_queue<node*, vector<node*>, decltype(compare)> pq(compare);
+        priority_queue<node*, vector<node*>, decltype(compare)> pq(compare);
 
-    pq.push(nodes[max_priority_index]);
-    nodes[max_priority_index]->setVisited();
-    while (!pq.empty()) {
-        node* current = pq.top();
-        pq.pop();
+        pq.push(nodes[i]);
+        nodes[i]->setVisited();
+        while (!pq.empty()) {
+            node* current = pq.top();
+            pq.pop();
 
-        for (auto child : current->children) {
-            if (!child->isVisited) {
-                child->setVisited();
-                pq.push(child);
-                current->isLeaf = false;
+            for (auto child : current->children) {
+                if (!child->isVisited) {
+                    child->setVisited();
+                    pq.push(child);
+                    current->isLeaf = false;
+                }
             }
         }
-    }
-    int leafCount = 0;
-    for(int i=0;i<n;i++){
-        if(nodes[i]->isLeaf){
-            leafCount++;
+        int leafCount = 0;
+        for(int i=0;i<n;i++){
+            if(nodes[i]->isLeaf){
+                leafCount++;
+            }
         }
+        if(leafCount>max_leaf_count)max_leaf_count=leafCount;
     }
-    cout<<leafCount<<endl;
+    cout<<max_leaf_count<<endl;
     for(int i=0;i<n;i++)delete nodes[i];
 }

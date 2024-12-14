@@ -79,7 +79,7 @@ public:
 };
 
 Graph priorityBfs(Graph& graph, int startVertex) {
-    std::cout << "Start vertex: " << startVertex << std::endl;
+    // std::cout << "Start vertex: " << startVertex << std::endl;
     Graph tree(graph.numVertices);
     int visited[graph.numVertices] = {0};
     std::priority_queue<std::pair<int, int>> pq;
@@ -131,7 +131,7 @@ Graph simulatedAnnealing(Graph& graph, int iterations) {
         temperature *= coolingRate;
     }
 
-    std::cout << temperature << std::endl;
+    // std::cout << temperature << std::endl;
 
     return currTree;
 }
@@ -317,21 +317,41 @@ Graph readGraphFromFile(const std::string& filePath) {
     return graph;
 }
 
+Graph readGraphFromConsole() {
+    
+    int numVertices, numEdges;
+    std::cin >> numVertices >> numEdges;
+
+    Graph graph(numVertices);
+    for (int i = 0; i < numEdges; ++i) {
+        int u, v;
+        std::cin >> u >> v;
+        graph.addEdge(u, v);
+    }
+    return graph;
+}
+
 int main() {
     std::string filePath = "example.txt";
-    Graph graph = readGraphFromFile(filePath);
-    std::cout << graph.findDegree(28) << " " << graph.findDegree(30) << std::endl;
+    // Graph graph = readGraphFromFile(filePath);
+    Graph graph = readGraphFromConsole();
+    // std::cout << graph.findDegree(28) << " " << graph.findDegree(30) << std::endl;
 
     Graph tree = priorityBfs(graph, graph.getMaxDegreeVertex());
-    std::cout << "Tree is tree: " << isTree(tree) << "\n";
-    std::cout << "Leaf nodes in tree: " << countLeafNodes(tree) << "\n";
+    // std::cout << "Tree is tree: " << isTree(tree) << "\n";
+    // std::cout << "Leaf nodes in tree: " << countLeafNodes(tree) << "\n";
 
     int iterations = 1000;
-    Graph resultTree = simulatedAnnealing(tree, iterations);
-    // std::cout << "hello"<<std::endl;
+    bool treeFound = false;
+    Graph resultTree=tree;
+    while(!treeFound){
+        resultTree = simulatedAnnealing(tree, iterations);
+        // std::cout << "hello"<<std::endl;
 
-    std::cout << "Resulting tree is tree: " << isTree(resultTree) << "\n";
-    std::cout << "Leaf nodes in resulting tree: " << countLeafNodes(resultTree) << "\n";
+        // std::cout << "Resulting tree is tree: " << isTree(resultTree) << "\n";
+        treeFound = isTree(resultTree);
+    }
+    std::cout << countLeafNodes(resultTree) << "\n";
 
     return 0;
 }
