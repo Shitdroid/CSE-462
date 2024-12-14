@@ -1,4 +1,5 @@
 #include<bits/stdc++.h>
+#include<bits/stdc++.h>
 
 
 // class declaration
@@ -6,8 +7,8 @@ class Graph;
 
 // function declarations
 Graph priorityBfs(Graph& graph, int startVertex); 
-Graph simulatedAnnealing(Graph& graph, int iterations);
-void randomNeighbouringTree(Graph& graph);
+Graph simulatedAnnealing(Graph& graph, std::vector<std::vector<int>> adjMatrix, int iterations);
+void randomNeighbouringTree(Graph& graph,std::vector<std::vector<int>> adjMatrix);
 bool isConnected(Graph& graph);
 bool isTree(Graph& graph);
 int countLeafNodes(Graph& graph);
@@ -65,32 +66,20 @@ public:
         return maxDegreeVertex;
     }
 
-    Graph& operator=(const Graph& other) {
-        if (this != &other) {
+    Graph operator=(const Graph& other) {
+        // if (this != &other) {
             numVertices = other.numVertices;
             adjMatrix = other.adjMatrix; 
             degrees = other.degrees;
-        }
+        // }
         // std::cout << "Assignment operator called\n";
         return *this;
     }
 
-    void printAdjList() {
-        for (int u = 0; u < numVertices; u++) {
-            std::cout << u << ": ";
-            for (int v = 0; v < numVertices; v++) {
-                if (adjMatrix[u][v] == 1) {
-                    std::cout << v << " ";
-                }
-            }
-            std::cout << std::endl;
-        }
-    }
 
 };
 
 Graph priorityBfs(Graph& graph, int startVertex) {
-    // std::cout << "Start vertex: " << startVertex << std::endl;
     Graph tree(graph.numVertices);
     int visited[graph.numVertices] = {0};
     std::priority_queue<std::pair<int, int>> pq;
@@ -112,10 +101,11 @@ Graph priorityBfs(Graph& graph, int startVertex) {
         }
     }
 
+
     return tree;
 }
 
-Graph simulatedAnnealing(Graph& graph, int iterations) {
+Graph simulatedAnnealing(Graph& graph,std::vector<std::vector<int>> adjMatrix,int iterations) {
     std::uniform_real_distribution<> probDist(0.0, 1.0);
     
     Graph currTree = graph;
@@ -126,7 +116,7 @@ Graph simulatedAnnealing(Graph& graph, int iterations) {
 
     for (int i = 0; i < iterations; i++) {
         Graph nextTree = currTree;
-        randomNeighbouringTree(nextTree);
+        randomNeighbouringTree(nextTree,adjMatrix);
         // std::cout << "Debug 1" << std::endl;
 
         double nextFitness = fitnessFunction(nextTree).first;
@@ -142,12 +132,10 @@ Graph simulatedAnnealing(Graph& graph, int iterations) {
         temperature *= coolingRate;
     }
 
-    // std::cout << temperature << std::endl;
-
     return currTree;
 }
 
-void randomNeighbouringTree(Graph& graph) {
+void randomNeighbouringTree(Graph& graph,std::vector<std::vector<int>> adjMatrix) {
     std::vector<std::pair<int, int>> treeEdges;
 
     // step 1: remove a random edge from the tree
@@ -233,9 +221,17 @@ void randomNeighbouringTree(Graph& graph) {
     int node1 = comp1[nodeDist1(gen)];
     int node2 = comp2[nodeDist2(gen)];
 
-    while (graph.adjMatrix[node1][node2] == 1) {
+    while (true) {
+        if (!graph.adjMatrix[node1][node2]) {
+            if (adjMatrix[node1][node2] == 1) {
+                break;
+            }
+
+        }
+
         node1 = comp1[nodeDist1(gen)];
         node2 = comp2[nodeDist2(gen)];
+
     }
 
     // std::cout << "Debug 5" << std::endl;
@@ -243,6 +239,7 @@ void randomNeighbouringTree(Graph& graph) {
     graph.adjMatrix[node1][node2] = 1;
     graph.adjMatrix[node2][node1] = 1;
 }
+
 
 bool isConnected(Graph& graph) {
     int visited[graph.numVertices] = {0};
@@ -273,12 +270,10 @@ bool isTree(Graph& graph) {
     int numEdges = 0;
 
     for (int u = 0; u < graph.numVertices; u++) {
-        for (int v = 0; v < graph.numVertices; v++) {
+        for (int v = u + 1; v < graph.numVertices; v++) {
             numEdges += graph.adjMatrix[u][v];
         }
     }
-
-    numEdges /= 2;
 
     return numEdges == graph.numVertices - 1 && isConnected(graph);
 }
@@ -313,6 +308,7 @@ std::pair<double, int> fitnessFunction(Graph& graph) {
 
     return {totalWeight/graph.numVertices, leafNodes};
 }
+
 
 Graph readGraphFromFile(const std::string& filePath) {
     std::ifstream file(filePath);
@@ -372,22 +368,14 @@ int main() {
     int iterations = 1000;
     bool treeFound = false;
     Graph resultTree=tree;
-    // while(!treeFound){
-    //     resultTree = simulatedAnnealing(tree, iterations);
-    //     // std::cout << "hello"<<std::endl;
+    while(!treeFound){
+        resultTree = simulatedAnnealing(tree, graph.adjMatrix,iterations);
+        // std::cout << "hello"<<std::endl;
 
-    //     // std::cout << "Resulting tree is tree: " << isTree(resultTree) << "\n";
-    //     treeFound = isTree(resultTree) && areEdgesInGraph(graph, resultTree);
+        // std::cout << "Resulting tree is tree: " << isTree(resultTree) << "\n";
+        treeFound = isTree(resultTree) && areEdgesInGraph(graph, resultTree); 
 
-    //     resultTree.printAdjList();  
-    //     std::cout<<"simulated annealing return a tree: "<<isTree(resultTree)<<std::endl;
-    //     std::cout<<"simulated annealing return connected: "<<isConnected(resultTree)<<std::endl;
-    //     std::cout<<"simulated annealing return correct edges: "<<areEdgesInGraph(graph, resultTree)<<std::endl;
-    //     graph.printAdjList();
-    //     std::cout<<"run once"<<std::endl;
-
-    // }
-    // resultTree.printAdjList();  
+    } 
     std::cout << countLeafNodes(resultTree);
 
 
