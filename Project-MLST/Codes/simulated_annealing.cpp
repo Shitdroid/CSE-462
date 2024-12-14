@@ -75,6 +75,17 @@ public:
         return *this;
     }
 
+    void printAdjList() {
+        for (int u = 0; u < numVertices; u++) {
+            std::cout << u << ": ";
+            for (int v = 0; v < numVertices; v++) {
+                if (adjMatrix[u][v] == 1) {
+                    std::cout << v << " ";
+                }
+            }
+            std::cout << std::endl;
+        }
+    }
 
 };
 
@@ -262,7 +273,7 @@ bool isTree(Graph& graph) {
     int numEdges = 0;
 
     for (int u = 0; u < graph.numVertices; u++) {
-        for (int v = u + 1; v < graph.numVertices; v++) {
+        for (int v = 0; v < graph.numVertices; v++) {
             numEdges += graph.adjMatrix[u][v];
         }
     }
@@ -331,27 +342,54 @@ Graph readGraphFromConsole() {
     return graph;
 }
 
+bool areEdgesInGraph(const Graph& graph1, const Graph& graph2) {
+    for (int u = 0; u < graph2.numVertices; u++) {
+        for (int v = u + 1; v < graph2.numVertices; v++) {
+            if (graph2.adjMatrix[u][v] == 1 && graph1.adjMatrix[u][v] != 1) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 int main() {
     std::string filePath = "example.txt";
     // Graph graph = readGraphFromFile(filePath);
     Graph graph = readGraphFromConsole();
+    // graph.printAdjList();
     // std::cout << graph.findDegree(28) << " " << graph.findDegree(30) << std::endl;
+
+    // graph.printAdjList(); // Add this line to print the adjacency list of the graph
 
     Graph tree = priorityBfs(graph, graph.getMaxDegreeVertex());
     // std::cout << "Tree is tree: " << isTree(tree) << "\n";
     // std::cout << "Leaf nodes in tree: " << countLeafNodes(tree) << "\n";
+    // std::cout<<"BFS return a tree: "<<isTree(tree)<<std::endl;
+    // std::cout<<"BFS return connected: "<<isConnected(tree)<<std::endl;
+    // tree.printAdjList();
 
     int iterations = 1000;
     bool treeFound = false;
     Graph resultTree=tree;
-    while(!treeFound){
-        resultTree = simulatedAnnealing(tree, iterations);
-        // std::cout << "hello"<<std::endl;
+    // while(!treeFound){
+    //     resultTree = simulatedAnnealing(tree, iterations);
+    //     // std::cout << "hello"<<std::endl;
 
-        // std::cout << "Resulting tree is tree: " << isTree(resultTree) << "\n";
-        treeFound = isTree(resultTree);
-    }
+    //     // std::cout << "Resulting tree is tree: " << isTree(resultTree) << "\n";
+    //     treeFound = isTree(resultTree) && areEdgesInGraph(graph, resultTree);
+
+    //     resultTree.printAdjList();  
+    //     std::cout<<"simulated annealing return a tree: "<<isTree(resultTree)<<std::endl;
+    //     std::cout<<"simulated annealing return connected: "<<isConnected(resultTree)<<std::endl;
+    //     std::cout<<"simulated annealing return correct edges: "<<areEdgesInGraph(graph, resultTree)<<std::endl;
+    //     graph.printAdjList();
+    //     std::cout<<"run once"<<std::endl;
+
+    // }
+    // resultTree.printAdjList();  
     std::cout << countLeafNodes(resultTree);
+
 
     return 0;
 }

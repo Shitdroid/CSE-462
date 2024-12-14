@@ -6,7 +6,7 @@ import csv
 
 # ...existing code...
 
-def compile_cpp_file(source_file):
+def compile_cpp_file(algo):
     """
     Compiles a C++ file and returns the path of the object file created.
     
@@ -16,8 +16,7 @@ def compile_cpp_file(source_file):
     Returns:
         str: The path to the created object file.
     """
-    object_file = os.path.splitext(source_file)[0] + '.o'
-    compile_command = ['g++', '-c', source_file, '-o', object_file]
+    compile_command = ['g++', algo['source_file'], '-o', algo['object_file']]
     
     try:
         subprocess.run(compile_command, check=True)
@@ -25,7 +24,7 @@ def compile_cpp_file(source_file):
         print(f"Compilation failed: {e}")
         return None
     
-    return object_file
+    return algo['object_file']
 
 def run_object_file(object_file, input_file):
     with open(input_file) as file:
@@ -213,9 +212,8 @@ if __name__ == "__main__":
         }
     ]
     for algorithm in algorithms:
-        object_file = compile_cpp_file(algorithm["source_file"])
+        object_file = compile_cpp_file(algorithm)
         if object_file is not None:
-            algorithm["object_file"] = object_file
             print(f"Compiled {algorithm['name']} successfully.")
         else:
             print(f"Failed to compile {algorithm['name']}.")
