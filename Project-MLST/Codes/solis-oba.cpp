@@ -1,9 +1,9 @@
 #include <iostream>
-#include <fstream>
 #include <list>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -66,29 +66,16 @@ class Graph {
     vector<Node> nodes; // vector of nodes
     list<int> R1, R2, R3, R4; // expansion rule candidate lists
     vector<pair<int, int>> treeEdges; // vector of tree edges
-    vector<pair<int, int>> nonTreeEdges; // vector of non-tree edges
+    vector<pair<int, int>> Edges; // vector of non-tree edges
     DisjointSet ds; // disjoint set for tracking trees
-    vector<vector<bool>> edges; // edges of the graph
 
 public:
-    Graph(int n) : nodes(n), ds(n) {
-        for(int i=0;i<n;i++)
-        {
-             vector<bool>adj;
-                for(int j=0;j<n;j++)
-                {
-                    adj.push_back(false);
-                }
-                edges.push_back(adj);
-        }
-    }
+    Graph(int n) : nodes(n), ds(n) {}
 
     void addEdge(int u, int v) {
         nodes[u].addNeighbour(v);
         nodes[v].addNeighbour(u);
-         
-         edges[u][v] = true;
-         edges[v][u] = true;
+        Edges.push_back({u, v});
         if (nodes[u].outsideDegree == 3) 
             addToList(u, R4);
 
@@ -136,6 +123,16 @@ public:
         }
     }
 
+    void expandVertexWithoutListUpdate(int v){
+        nodes[v].inF = true;
+        for(int neighbor : nodes[v].adjList){
+            if(!nodes[neighbor].inF){
+                nodes[neighbor].inF = true;
+                treeEdges.push_back({v, neighbor});
+                ds.unite(v, neighbor);
+            }
+        }
+    }
     void expandVertex(int v) {
         bool outside = !(nodes[v].inF);
         bool isW = (nodes[v].listIn == &R2 || nodes[v].listIn == &R3);
@@ -169,6 +166,10 @@ public:
     }
 
     void phase1() {
+        if(R4.empty()){
+            int leaves = max(2,(int)nodes.size());
+            cout<<leaves<<endl;
+        }
         while (!R1.empty() || !R2.empty() || !R3.empty() || !R4.empty()) {
             if (!R1.empty()) {
                 int v = R1.front();
@@ -191,97 +192,20 @@ public:
         }
     }
 
-    void phase2() {
-      
-        for( int i=0;i<treeEdges.size();i++)
-        {
-            cout<<treeEdges[i].first<<" "<<treeEdges[i].second<<endl;
-        }
-
-            list<int> isinF;
-           for (int v = 0; v < nodes.size(); v++) 
-            {   
-    
-                if (nodes[v].inF) { 
-                    isinF.push_back(v);
-                }
-
-            }
-        while(!isinF.empty())
-        {
-            int v = isinF.front();
-            isinF.pop_front();
-           
-                    for (int neighbor : nodes[v].adjList) {
-                        if (!nodes[neighbor].inF) 
-                        {    
-                            cout<<"not in F: "<<neighbor<<endl;
-                            expandVertex(v); // Expand v
-                            isinF.push_back(neighbor);
-                            break;
-                        }
-                    }    
-        }
-        
-          for( int i=0;i<treeEdges.size();i++)
-        {
-            cout<<treeEdges[i].first<<" "<<treeEdges[i].second<<endl;
-        }
-     
-        unordered_map<int, vector<int>> components;
-        for (int i = 0; i < nodes.size(); ++i) {
-            if (nodes[i].inF) {
-                int root = ds.find(i); // finding the root of the tree(representative node)
-                components[root].push_back(i);
+    void phase2(){
+        for (int v = 0; v < nodes.size(); ++v) {
+            if (!nodes[v].inF) {
+                expandVertexWithoutListUpdate(v);
             }
         }
-        // cout<<"Components: "<<components.size()<<endl;
-        // cout<<nodes[4].inF<<endl;
-        // for(int i=0;i<components.size();i++)
-        // {
-        //     cout<<"Component "<<i<<": ";
-        //     for(int j=0;j<components[i].size();j++)
-        //     {
-        //         cout<<components[i][j]<<" ";
-        //     }
-        //     cout<<endl;
-        // }
-        
-        // make connected
-        
-       for (auto i = components.begin(); i != components.end(); i++)
-        {   bool added=false;
-            if(components[i->first].size()>=1)
+        for(int i=0;i<Edges.size();i++)
+        {
+            if(ds.find(Edges[i].first)!=ds.find(Edges[i].second))
             {
-               for(auto j = components.begin(); j!= components.end(); j++)
-               {
-                   if(i->first!=j->first)
-                   {
-                         for(auto k =0;k<(j->second).size(); k++)
-                         {
-                            if(edges[i->first][(j->second)[k]]==true)
-                            {
-                                cout<<"Edge added: "<<i->first<<" "<<(j->second)[k]<<endl;
-                                treeEdges.push_back({(j->second)[k],i->first});
-                                ds.unite((j->second)[k],i->first);
-                                added=true;
-                                break;
-                            }
-
-                         }
-                   }
-                   if(added)
-                     {  
-
-                        break;
-                     }
-               }
+                treeEdges.push_back(Edges[i]);
+                ds.unite(Edges[i].first, Edges[i].second);
             }
-
-            
-
         }
-          
     }
 
 
@@ -379,11 +303,11 @@ int main() {
     
     graph.phase1();
 
-    graph.print();
+    // graph.print();
 
     graph.phase2();
-    graph.print();
+    // graph.print();
     int leaves=graph.countLeaves();
-    cout<<"Leaves: "<<leaves<<endl;
+    cout<<leaves<<endl;
     return 0;
 }
