@@ -61,8 +61,9 @@ def run_on_random_dataset(algorithms, nodes_list=None, probs_list=None, num_grap
                 result.append(total_leaves/num_graphs)
                 result.append(total_time/num_graphs)
             results.append(result)
-            
-    with open("Results/Random.csv", "w") as file:
+    filename="Results/Random.csv"
+    os.makedirs(os.path.dirname(filename), exist_ok=True)        
+    with open(filename, "w") as file:
         writer=csv.writer(file)
         writer.writerow(header)
         writer.writerows(results)
@@ -95,8 +96,9 @@ def run_on_d_regular_dataset(algorithms, nodes_list=None, degree_list=None, num_
                 result.append(total_leaves/num_graphs)
                 result.append(total_time/num_graphs)
             results.append(result)
-            
-    with open("Results/D-Regular.csv", "w") as file:
+    filename="Results/D-Regular.csv"
+    os.makedirs(os.path.dirname(filename), exist_ok=True)        
+    with open(filename, "w") as file:  
         writer=csv.writer(file)
         writer.writerow(header)
         writer.writerows(results)
@@ -131,8 +133,9 @@ def run_on_complete_grid_dataset(algorithms, rows_list=None, cols_list=None, num
                 result.append(total_leaves/num_graphs)
                 result.append(total_time/num_graphs)
             results.append(result)
-            
-    with open("Results/Complete-Grid.csv", "w") as file:
+    filename="Results/Complete-Grid.csv"
+    os.makedirs(os.path.dirname(filename), exist_ok=True)        
+    with open(filename, "w") as file:
         writer=csv.writer(file)
         writer.writerow(header)
         writer.writerows(results)
@@ -170,8 +173,9 @@ def run_on_incomplete_grid_dataset(algorithms, rows_list=None, cols_list=None, n
                     result.append(total_leaves/num_graphs)
                     result.append(total_time/num_graphs)
                 results.append(result)
-            
-    with open("Results/Incomplete-Grid.csv", "w") as file:
+    filename="Results/Incomplete-Grid.csv"
+    os.makedirs(os.path.dirname(filename), exist_ok=True)        
+    with open(filename, "w") as file:
         writer=csv.writer(file)
         writer.writerow(header)
         writer.writerows(results)
