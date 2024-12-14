@@ -600,7 +600,9 @@ int main(){
     ios::sync_with_stdio(false);
     cin.tie(0);
     int n, m;
+    // cout<< " Enter the number of vertices and edges: ";
     cin >> n >> m;
+    // cout<< " Enter the edges: ";
     Graph g(n);
     for(int i = 0; i < m; i++){
         int u, v;
