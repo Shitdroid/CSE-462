@@ -47,7 +47,7 @@ int main(){
             leafCount++;
         }
     }
-    cout<<leafCount<<endl;
+    cout<<leafCount;
     for(int i=0;i<n;i++)delete nodes[i];
     
 }

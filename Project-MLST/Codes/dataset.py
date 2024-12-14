@@ -112,9 +112,9 @@ def generate_complete_grid_dataset(rows_list=None, cols_list=None, num_graphs=10
 
 def generate_incomplete_grid_dataset(rows_list=None, cols_list=None, num_graphs=10):
     if rows_list is None:
-        rows_list = [4, 5, 6, 7]
+        rows_list = [4, 5, 6, 7, 8, 9]
     if cols_list is None:
-        cols_list = [4, 5, 6, 7]
+        cols_list = [4, 5, 6, 7, 8, 9]
 
     for i in tqdm(range(num_graphs), desc="Generating incomplete grid graphs"):
         for rows in rows_list:

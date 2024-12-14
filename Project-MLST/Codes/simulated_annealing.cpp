@@ -351,7 +351,7 @@ int main() {
         // std::cout << "Resulting tree is tree: " << isTree(resultTree) << "\n";
         treeFound = isTree(resultTree);
     }
-    std::cout << countLeafNodes(resultTree) << "\n";
+    std::cout << countLeafNodes(resultTree);
 
     return 0;
 }

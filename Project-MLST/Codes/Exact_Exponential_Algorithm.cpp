@@ -594,7 +594,7 @@ void solve(Graph g){
         // cout << "here " << endl;
         ans = max(ans, M_Algorithm(i, g1));
     }
-    cout << ans << '\n';
+    cout << ans ;
 }
 int main(){
     ios::sync_with_stdio(false);

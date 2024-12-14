@@ -69,6 +69,6 @@ int main(){
         }
         if(leafCount>max_leaf_count)max_leaf_count=leafCount;
     }
-    cout<<max_leaf_count<<endl;
+    cout<<max_leaf_count;
     for(int i=0;i<n;i++)delete nodes[i];
 }

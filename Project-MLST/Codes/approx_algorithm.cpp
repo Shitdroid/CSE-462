@@ -188,7 +188,7 @@ public:
                 R4.pop_front();
                 expandVertex(v);
             }
-            print();
+            // print();
         }
     }
 
@@ -299,7 +299,7 @@ int main() {
         graph.addEdge(u, v);
     }
 
-    graph.print();
+    // graph.print();
     
     graph.phase1();
 
@@ -308,6 +308,6 @@ int main() {
     graph.phase2();
     // graph.print();
     int leaves=graph.countLeaves();
-    cout<<leaves<<endl;
+    cout<<leaves;
     return 0;
 }
