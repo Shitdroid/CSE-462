@@ -92,6 +92,7 @@ struct Graph{
         }
     }
 
+
     bool R1(){
         // cout << "Inside R1" << endl;
         bool changedonce = false;
