@@ -218,7 +218,7 @@ if __name__ == "__main__":
         else:
             print(f"Failed to compile {algorithm['name']}.")
     
-    run_on_random_dataset(algorithms)
+    # run_on_random_dataset(algorithms)
     run_on_d_regular_dataset(algorithms)
     run_on_complete_grid_dataset(algorithms)
     run_on_incomplete_grid_dataset(algorithms)
